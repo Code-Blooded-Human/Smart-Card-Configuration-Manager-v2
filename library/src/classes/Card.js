@@ -1,3 +1,5 @@
+const lengthEncodingAsByteArray = require("../utils/utils");
+
 class Card{
     constructor(reader,protocol)
     {
@@ -34,12 +36,38 @@ class Card{
             })
         });
     }
+
+    readBinaryRecursively(offset,toRead,resolve,buf){
+        var apduOffeset = 0x0000 | offset;
+        var b1 = (apduOffeset & 0xFF00)/256;
+        var b2 = (apduOffeset & 0x00FF);
+        var apdu = [0x00,0xB0,b1,b2,0xFF]
+        offset=offset+255;
+        this.sendAPDU(apdu,300)
+        .then((data)=>{
+            //check if success
+            console.log(new Buffer(apdu))
+            console.log(data);
+            buf.push(data);
+            if(offset < toRead){
+                this.readBinaryRecursively(offset,toRead,resolve,buf);
+            }else{
+                var x = Buffer.concat(buf);
+                resolve(x);
+            }
+            
+        })
+    }
     
     readSelectedFile(responseLength)
     {
         return new Promise((resolve, reject)=>{
-            var apdu = [0x00, 0xB0, 0x00, 0x00, responseLength];
-            this.sendAPDU(apdu,responseLength+100)
+            // var apdu = [0x00, 0xB0, 0x00, 0x00];
+            // var le = lengthEncodingAsByteArray(responseLength);
+            // apdu = apdu.concat(le);
+            var apdu = [0x00, 0xB0, 0x80, 0x02, 0xFF]
+            console.log(new Buffer(apdu));
+            this.sendAPDU(apdu,3000)
             .then((data)=>{
                 //check if success
                 console.log(data);
@@ -51,6 +79,15 @@ class Card{
             })
         });
     }
+    readSelectedFileExtended(responseLength)
+    {
+        return new Promise((resolve, reject)=>{
+            var buf = [];
+            this.readBinaryRecursively(0,responseLength,resolve,buf);
+        });
+    }
+
+ 
     
     readFile(filePath, responseLength)
     {

@@ -1,5 +1,9 @@
 var pcsc = require('pcsclite');
 var Reader = require('./classes/Reader');
+const fs = require('fs');
+const rawBytesToJson = require('./utils/asn1Parser');
+
+
 
 
 var pcsc = pcsc();
@@ -48,12 +52,43 @@ pcsc.on('reader', function(reader) {
     });
 });
 
+var schema =`
+BHILAIINFO1V2
+DEFINITIONS IMPLICIT TAGS ::= BEGIN
+Info1FreeReadV2 ::= SEQUENCE {
+
+version INTEGER,
+id PrintableString,
+validupto PrintableString,
+name UTF8String,
+dob PrintableString,
+uid PrintableString,
+emergencyphone UTF8String,
+bloodgroup PrintableString,
+issuerauthority PrintableString,
+gender PrintableString,
+dateofissue PrintableString,
+designation [0] UTF8String OPTIONAL,
+program [1] UTF8String OPTIONAL,
+relation [2] PrintableString OPTIONAL,
+nameofprimary [3] UTF8String OPTIONAL,
+designationofprimary [4] UTF8String OPTIONAL,
+programofprimary [5] UTF8String OPTIONAL,
+doj [6] PrintableString OPTIONAL,
+dojofprimary [7] PrintableString OPTIONAL,
+photo OCTET STRING
+
+}
+END
+`
+
 function cardConnect(card)
 {
     card.selectFile([0x3F,0x00])
     .then(()=>{return card.selectFile([0x3F,0x04])})
-    .then(()=>{return card.readSelectedFile(0x70)})
-    .then((data)=>{console.log(data)});
+    .then(()=>{return card.readSelectedFileExtended(6000)})
+    .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
+    .then((data)=>{console.log(data)})
 }
 
 sc_reader.OnCardConnectedEvent(cardConnect);
