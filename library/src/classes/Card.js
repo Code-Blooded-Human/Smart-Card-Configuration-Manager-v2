@@ -1,3 +1,4 @@
+const rawBytesToJson = require("../utils/asn1Parser");
 const lengthEncodingAsByteArray = require("../utils/utils");
 
 function hexToBytes(hex) {
@@ -121,12 +122,13 @@ class Card{
 
     readAttribute(name){
         return new Promise((resolve,reject)=>{
-            var file = this.scf.getAttributeLocation(name);
+            var file = this.scf.getAttributeFile(name);
             var size = this.scf.getFileMaxSize(file);
             var x = this.scf.getFileSchema(file);
             var schema = x[0];
             var schemaName = x[1];
-            this.readFileByPath(file,size)
+            var filePath = this.scf.getFilePath(file);
+            this.readFileByPath(filePath,size)
                 .then((data)=>{
                     return rawBytesToJson(data,schema,schemaName)
                 })

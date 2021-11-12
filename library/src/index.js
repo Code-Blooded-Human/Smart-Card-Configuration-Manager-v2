@@ -83,12 +83,41 @@ photo OCTET STRING
 END
 `
 var scfjson={
-    attributes:[{
-        name:"name",
-        filePath:["3F00","3F04"]
-    }],
+    attributes:[
+        {
+            name:"name",
+            filePath:["3F00","3F04"],
+            fileID:1
+        },
+        {
+            name:"dob",
+            filePath:["3F00","3F04"],
+            fileID:1
+        },
+        {
+            name:"uid",
+            filePath:["3F00","3F04"],
+            fileID:1
+        },
+        {
+            name:"gender",
+            filePath:["3F00","3F04"],
+            fileID:1
+        },
+        {
+            name:"bloodgroup",
+            filePath:["3F00","3F04"],
+            fileID:1
+        },
+        {
+            name:"id",
+            filePath:["3F00","3F04"],
+            fileID:1
+        }
+    ],
     fs:[
         {
+            id:1,
             path:["3F00","3F04"],
             schema:schema,
             schemaName:"Info1FreeReadV2",
@@ -110,7 +139,7 @@ function cardConnect(card)
     // card.readFileByPath(["3F00","3F04"],6000)
     // .then((data)=>{console.log(data)})
 
-    card.readAttribute("name")
+    card.readAttribute("dob")
         .then((data)=>{console.log(data)});
 }
 sc_reader.registerSCF(scf);
