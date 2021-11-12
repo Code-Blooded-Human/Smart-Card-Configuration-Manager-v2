@@ -1,5 +1,10 @@
 const lengthEncodingAsByteArray = require("../utils/utils");
 
+function hexToBytes(hex) {
+    for (var bytes = [], c = 0; c < hex.length; c += 2)
+        bytes.push(parseInt(hex.substr(c, 2), 16));
+    return bytes;
+}
 class Card{
     constructor(reader,protocol)
     {
@@ -88,11 +93,28 @@ class Card{
     }
 
  
+    readFileRecursively(filePath,responseLength,resolve){
+        if(filePath.length == 1){
+            this.selectFile(hexToBytes(filePath[0]))
+            .then(()=>{
+                return this.readSelectedFileExtended(responseLength)
+            })
+            .then((data)=>{
+                resolve(data);
+            })
+        }else{
+            this.selectFile(hexToBytes(filePath[0]))
+            .then(()=>{
+                filePath.shift();
+                this.readFileRecursively(filePath,responseLength,resolve);
+            })
+        }
+    }
     
-    readFile(filePath, responseLength)
+    readFileByPath(filePath, responseLength)
     {
         return new Promise((resolve,reject)=>{
-            // TODO
+            this.readFileRecursively(filePath,responseLength,resolve);
         });
     }
 }

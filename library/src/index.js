@@ -84,10 +84,12 @@ END
 
 function cardConnect(card)
 {
-    card.selectFile([0x3F,0x00])
-    .then(()=>{return card.selectFile([0x3F,0x04])})
-    .then(()=>{return card.readSelectedFileExtended(6000)})
-    .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
+    // card.selectFile([0x3F,0x00])
+    // .then(()=>{return card.selectFile([0x3F,0x04])})
+    // .then(()=>{return card.readSelectedFileExtended(6000)})
+    // .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
+    // .then((data)=>{console.log(data)})
+    card.readFileByPath(["3F00","3F04"],6000)
     .then((data)=>{console.log(data)})
 }
 
