@@ -6,10 +6,11 @@ function hexToBytes(hex) {
     return bytes;
 }
 class Card{
-    constructor(reader,protocol)
+    constructor(reader,protocol,scf)
     {
         this.reader = reader;
         this.protocol = protocol;
+        this.scf = scf;
     }
 
     sendAPDU(apdu,responseLength){
@@ -116,6 +117,21 @@ class Card{
         return new Promise((resolve,reject)=>{
             this.readFileRecursively(filePath,responseLength,resolve);
         });
+    }
+
+    readAttribute(name){
+        return new Promise((resolve,reject)=>{
+            var file = this.scf.getAttributeLocation(name);
+            var size = this.scf.getFileMaxSize(file);
+            var x = this.scf.getFileSchema(file);
+            var schema = x[0];
+            var schemaName = x[1];
+            this.readFileByPath(file,size)
+                .then((data)=>{
+                    return rawBytesToJson(data,schema,schemaName)
+                })
+                .then((data)=>{resolve(data[name])});
+        })
     }
 }
 

@@ -13,7 +13,7 @@ class Reader{
 
     cardConnected()
     {
-        var card = new Card(this.scReader,this.scProtocol);
+        var card = new Card(this.scReader,this.scProtocol, this.scf);
         this.cardConnectedEvent(card);
     }
 
@@ -21,6 +21,10 @@ class Reader{
     {
         this.scReader=reader;
         this.scProtocol=protocol;
+    }
+
+    registerSCF(scf){
+        this.scf = scf;
     }
 
 }

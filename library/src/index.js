@@ -2,6 +2,7 @@ var pcsc = require('pcsclite');
 var Reader = require('./classes/Reader');
 const fs = require('fs');
 const rawBytesToJson = require('./utils/asn1Parser');
+const SCF = require('./classes/SCF');
 
 
 
@@ -81,6 +82,21 @@ photo OCTET STRING
 }
 END
 `
+var scfjson={
+    attributes:[{
+        name:"name",
+        filePath:["3F00","3F04"]
+    }],
+    fs:[
+        {
+            path:["3F00","3F04"],
+            schema:schema,
+            schemaName:"Info1FreeReadV2",
+            size:6000
+        }]
+}
+var scf = new SCF(scfjson);
+
 
 function cardConnect(card)
 {
@@ -89,10 +105,15 @@ function cardConnect(card)
     // .then(()=>{return card.readSelectedFileExtended(6000)})
     // .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
     // .then((data)=>{console.log(data)})
-    card.readFileByPath(["3F00","3F04"],6000)
-    .then((data)=>{console.log(data)})
-}
 
+
+    // card.readFileByPath(["3F00","3F04"],6000)
+    // .then((data)=>{console.log(data)})
+
+    card.readAttribute("name")
+        .then((data)=>{console.log(data)});
+}
+sc_reader.registerSCF(scf);
 sc_reader.OnCardConnectedEvent(cardConnect);
 
 // modele.exports = sc_reader;
