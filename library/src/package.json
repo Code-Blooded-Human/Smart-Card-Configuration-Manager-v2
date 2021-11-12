@@ -1,0 +1,20 @@
+{
+  "name": "sccm-library",
+  "version": "1.0.0",
+  "description": "Nodejs Library to read,write and update data on ISO 7816 Smart Cards using SCCM Configuration File.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "iso7816",
+    "SCOSTA",
+    "Smartcards",
+    "SCCM"
+  ],
+  "author": "Abhishek Shingane & Kumari Rani",
+  "license": "ISC",
+  "dependencies": {
+    "pcsclite": "^1.0.0"
+  }
+}
