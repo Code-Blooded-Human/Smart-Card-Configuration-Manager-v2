@@ -14,7 +14,7 @@ function rawBytesToJson(byteArray,asn1Schema,attributename){
                 if(err) {
                     return console.log(err);
                 }
-                exec(`python3 ./asn1_python/decode.py /tmp/schema.asn /tmp/raw_input.hex /tmp/out.json ${attributename}`, (error, stdout, stderr) => {
+                exec(`python3 ./src/asn1_python/decode.py /tmp/schema.asn /tmp/raw_input.hex /tmp/out.json ${attributename}`, (error, stdout, stderr) => {
                     if (error) {
                         console.log(`error: ${error.message}`);
                     }

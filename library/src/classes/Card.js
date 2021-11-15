@@ -1,26 +1,40 @@
 const rawBytesToJson = require("../utils/asn1Parser");
 const lengthEncodingAsByteArray = require("../utils/utils");
 
+
+
+
 function hexToBytes(hex) {
     for (var bytes = [], c = 0; c < hex.length; c += 2)
         bytes.push(parseInt(hex.substr(c, 2), 16));
     return bytes;
 }
+
+function asyncLock(lock){
+    return new Promise((resolve,reject)=>{
+        while(lock);
+        resolve();
+    });
+}
+
 class Card{
     constructor(reader,protocol,scf)
     {
         this.reader = reader;
         this.protocol = protocol;
         this.scf = scf;
+        this.cardInUse = false;
     }
 
     sendAPDU(apdu,responseLength){
         return new Promise((resolve,reject)=>{
+            console.log("SENDING APDU ->", new Buffer(apdu));
             this.reader.transmit(new Buffer(apdu), responseLength, this.protocol, function(err, data) {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
+                    console.log("GOT BACK ->", data);
                     resolve(data);
                 }
             });
@@ -34,7 +48,7 @@ class Card{
             this.sendAPDU(apdu,3)
             .then((data)=>{
                 //check if success
-                console.log(data);
+                //console.log(data);
                 resolve();
             })
             .catch((err)=>{
@@ -53,8 +67,8 @@ class Card{
         this.sendAPDU(apdu,300)
         .then((data)=>{
             //check if success
-            console.log(new Buffer(apdu))
-            console.log(data);
+            //console.log(new Buffer(apdu))
+            //console.log(data);
             buf.push(data);
             if(offset < toRead){
                 this.readBinaryRecursively(offset,toRead,resolve,buf);
@@ -77,7 +91,7 @@ class Card{
             this.sendAPDU(apdu,3000)
             .then((data)=>{
                 //check if success
-                console.log(data);
+                //console.log(data);
                 resolve(data);
             })
             .catch((err)=>{
@@ -120,14 +134,34 @@ class Card{
         });
     }
 
+    // readFileByPathMutex(filePath, responseLength){
+    //     return new Promise((resolve,reject)=>{
+    //         // console.log(1)
+    //         // while(this.cardInUse);
+    //         // console.log(2);
+    //         // this.cardInUse = true;
+    //         var that = this
+    //         asyncLock(this.cardInUse)
+    //             .then(()=>{
+    //                 that.cardInUse = true;
+    //                 that.readFileByPath(filePath,responseLength).then((data)=>{
+    //                     that.cardInUse = false;
+    //                     resolve(data);
+    //                 });
+    //             })
+            
+    //     })
+    // }
+
     readAttribute(name){
         return new Promise((resolve,reject)=>{
+            
             var file = this.scf.getAttributeFile(name);
             var size = this.scf.getFileMaxSize(file);
             var x = this.scf.getFileSchema(file);
             var schema = x[0];
             var schemaName = x[1];
-            var filePath = this.scf.getFilePath(file);
+            var filePath = JSON.parse(JSON.stringify(this.scf.getFilePath(file)));
             this.readFileByPath(filePath,size)
                 .then((data)=>{
                     return rawBytesToJson(data,schema,schemaName)
@@ -135,6 +169,9 @@ class Card{
                 .then((data)=>{resolve(data[name])});
         })
     }
+
+
+    
 }
 
 module.exports = Card;

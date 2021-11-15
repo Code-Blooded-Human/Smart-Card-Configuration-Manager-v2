@@ -1,0 +1,48 @@
+
+{
+    "attributes":[
+        {
+            "name":"name",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"dob",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"uid",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"gender",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"bloodgroup",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"id",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        },
+        {
+            "name":"photo",
+            "filePath":["3F00","3F04"],
+            "fileID":1
+        }
+    ],
+    "fs":[
+        {
+            "id":1,
+            "path":["3F00","3F04"],
+            "schema":"BHILAIINFO1V2 DEFINITIONS IMPLICIT TAGS ::= BEGIN Info1FreeReadV2 ::= SEQUENCE { version INTEGER, id PrintableString, validupto PrintableString, name UTF8String, dob PrintableString, uid PrintableString, emergencyphone UTF8String, bloodgroup PrintableString, issuerauthority PrintableString, gender PrintableString, dateofissue PrintableString, designation [0] UTF8String OPTIONAL, program [1] UTF8String OPTIONAL, relation [2] PrintableString OPTIONAL, nameofprimary [3] UTF8String OPTIONAL, designationofprimary [4] UTF8String OPTIONAL, programofprimary [5] UTF8String OPTIONAL, doj [6] PrintableString OPTIONAL, dojofprimary [7] PrintableString OPTIONAL, photo OCTET STRING } END",
+            "schemaName":"Info1FreeReadV2",
+            "size":6000
+        }]
+}

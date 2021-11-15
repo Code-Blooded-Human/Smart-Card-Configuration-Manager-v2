@@ -15,6 +15,7 @@
   "author": "Abhishek Shingane & Kumari Rani",
   "license": "ISC",
   "dependencies": {
+    "mutex-promise": "^0.1.0",
     "pcsclite": "^1.0.0"
   }
 }

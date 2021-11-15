@@ -11,6 +11,7 @@ var pcsc = pcsc();
 var sc_reader = new Reader;
 
 
+
 pcsc.on('reader', function(reader) {
 
     console.log('New reader detected', reader.name);
@@ -53,96 +54,102 @@ pcsc.on('reader', function(reader) {
     });
 });
 
-var schema =`
-BHILAIINFO1V2
-DEFINITIONS IMPLICIT TAGS ::= BEGIN
-Info1FreeReadV2 ::= SEQUENCE {
+// var schema =`
+// BHILAIINFO1V2
+// DEFINITIONS IMPLICIT TAGS ::= BEGIN
+// Info1FreeReadV2 ::= SEQUENCE {
 
-version INTEGER,
-id PrintableString,
-validupto PrintableString,
-name UTF8String,
-dob PrintableString,
-uid PrintableString,
-emergencyphone UTF8String,
-bloodgroup PrintableString,
-issuerauthority PrintableString,
-gender PrintableString,
-dateofissue PrintableString,
-designation [0] UTF8String OPTIONAL,
-program [1] UTF8String OPTIONAL,
-relation [2] PrintableString OPTIONAL,
-nameofprimary [3] UTF8String OPTIONAL,
-designationofprimary [4] UTF8String OPTIONAL,
-programofprimary [5] UTF8String OPTIONAL,
-doj [6] PrintableString OPTIONAL,
-dojofprimary [7] PrintableString OPTIONAL,
-photo OCTET STRING
+// version INTEGER,
+// id PrintableString,
+// validupto PrintableString,
+// name UTF8String,
+// dob PrintableString,
+// uid PrintableString,
+// emergencyphone UTF8String,
+// bloodgroup PrintableString,
+// issuerauthority PrintableString,
+// gender PrintableString,
+// dateofissue PrintableString,
+// designation [0] UTF8String OPTIONAL,
+// program [1] UTF8String OPTIONAL,
+// relation [2] PrintableString OPTIONAL,
+// nameofprimary [3] UTF8String OPTIONAL,
+// designationofprimary [4] UTF8String OPTIONAL,
+// programofprimary [5] UTF8String OPTIONAL,
+// doj [6] PrintableString OPTIONAL,
+// dojofprimary [7] PrintableString OPTIONAL,
+// photo OCTET STRING
 
-}
-END
-`
-var scfjson={
-    attributes:[
-        {
-            name:"name",
-            filePath:["3F00","3F04"],
-            fileID:1
-        },
-        {
-            name:"dob",
-            filePath:["3F00","3F04"],
-            fileID:1
-        },
-        {
-            name:"uid",
-            filePath:["3F00","3F04"],
-            fileID:1
-        },
-        {
-            name:"gender",
-            filePath:["3F00","3F04"],
-            fileID:1
-        },
-        {
-            name:"bloodgroup",
-            filePath:["3F00","3F04"],
-            fileID:1
-        },
-        {
-            name:"id",
-            filePath:["3F00","3F04"],
-            fileID:1
-        }
-    ],
-    fs:[
-        {
-            id:1,
-            path:["3F00","3F04"],
-            schema:schema,
-            schemaName:"Info1FreeReadV2",
-            size:6000
-        }]
-}
-var scf = new SCF(scfjson);
-
-
-function cardConnect(card)
-{
-    // card.selectFile([0x3F,0x00])
-    // .then(()=>{return card.selectFile([0x3F,0x04])})
-    // .then(()=>{return card.readSelectedFileExtended(6000)})
-    // .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
-    // .then((data)=>{console.log(data)})
+// }
+// END
+// `
+// var scfjson={
+//     attributes:[
+//         {
+//             name:"name",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         },
+//         {
+//             name:"dob",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         },
+//         {
+//             name:"uid",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         },
+//         {
+//             name:"gender",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         },
+//         {
+//             name:"bloodgroup",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         },
+//         {
+//             name:"id",
+//             filePath:["3F00","3F04"],
+//             fileID:1
+//         }
+//     ],
+//     fs:[
+//         {
+//             id:1,
+//             path:["3F00","3F04"],
+//             schema:schema,
+//             schemaName:"Info1FreeReadV2",
+//             size:6000
+//         }]
+// }
+// var scf = new SCF(scfjson);
 
 
-    // card.readFileByPath(["3F00","3F04"],6000)
-    // .then((data)=>{console.log(data)})
+// function cardConnect(card)
+// {
+//     // card.selectFile([0x3F,0x00])
+//     // .then(()=>{return card.selectFile([0x3F,0x04])})
+//     // .then(()=>{return card.readSelectedFileExtended(6000)})
+//     // .then((data)=>{return rawBytesToJson(data,schema,'Info1FreeReadV2')})
+//     // .then((data)=>{console.log(data)})
 
-    card.readAttribute("dob")
-        .then((data)=>{console.log(data)});
-}
-sc_reader.registerSCF(scf);
-sc_reader.OnCardConnectedEvent(cardConnect);
 
-// modele.exports = sc_reader;
+//     // card.readFileByPath(["3F00","3F04"],6000)
+//     // .then((data)=>{console.log(data)})
+
+//     card.readAttribute("dob")
+//         .then((data)=>{
+//             console.log(data);
+//             return card.readAttribute("name");
+//         }).then((data)=>{console.log(data)});
+
+//     // card.readAttribute("name")
+//     //     .then((data)=>{console.log(data)});
+// }
+// sc_reader.registerSCF(scf);
+// sc_reader.OnCardConnectedEvent(cardConnect);
+
+module.exports = sc_reader;
