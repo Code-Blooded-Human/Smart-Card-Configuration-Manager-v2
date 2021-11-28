@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SCCM Interface</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+
+    <nav class="navbar fixed-top navbar-dark bg-primary">
+        <a class="navbar-brand" href="#!">SCCM Schema Designer</a>
+        <div>
+            <button type="button" class="btn btn-success">Upload SCF</button>
+            <button type="button" class="btn btn-success ml-5 mr-3" onclick="onGenerateSCFBtnClick()" id="generateSCFBtn">Generate SCF</button>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 100px;">
+        <div class="row">
+            <!-- Password and Key Column starts here -->
+            <div class="col-4">
+                <!-- Password Section -->
+                <div style="width:100%; height: 200px;">
+                    <h2 style="text-align: center;">Password</h2>
+                    <hr>
+                    <div class="d-flex flex-column" id="passwordList"></div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".passwordModal">Add Password</button>
+                    <div class="modal fade passwordModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Create New Password</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <form id="passwordForm" method="POST" onSubmit="return false">
+                                    <div class="form-group row">
+                                        <label for="passwordName" class="col-sm-2 col-form-label">Name</label>
+                                        <div class="col-sm-10">
+                                          <input type="text"  class="form-control" id="passwordName" placeholder="Ex: AdminPassword" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="passwordMaxLength" class="col-sm-2 col-form-label">Max Length</label>
+                                        <div class="col-sm-10">
+                                          <input type="number"  class="form-control" id="passwordMaxLength" placeholder="Ex: 20">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="passwordMinLength" class="col-sm-2 col-form-label">Min Length</label>
+                                        <div class="col-sm-10">
+                                          <input type="number" class="form-control" id="passwordMinLength" placeholder="Ex: 8">
+                                        </div>
+                                    </div>
+                                    <div id="passwordType">
+                                        <label class="checkbox-inline mr-3">
+                                            <input type="checkbox" value="ALPHA_NUMERIC" class="mr-1">Alpha Numeric
+                                        </label>
+                                        <label class="checkbox-inline mr-3">
+                                            <input type="checkbox" value="NUMERIC_ONLY" class="mr-1">Numeric Only
+                                        </label>
+                                        <label class="checkbox-inline mr-3">
+                                            <input type="checkbox" value="SPECIAL_CHARS" class="mr-1">Special Characters
+                                        </label>
+                                    </div>
+                                    <hr>
+                                    <div style="float: right;">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="passwordModalSubmitBtn" type="submit" class="btn btn-primary" onclick="onCreatePasswordBtnClick()">Submit</button>
+                                    </div>
+                                </form>
+                                </div>
+                        </div>
+                    </div>
+                    </div>
+                    <br><hr><hr>
+                    <!-- Key Section -->
+                    <h2 style="text-align: center;">Key</h2>
+                    <hr>
+                    <div class="d-flex flex-column" id="keyList">
+                    </div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".keyModal">Add Key</button>
+                    <div class="modal fade keyModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Create New Key</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <form id="keyForm">
+                                    <div class="form-group row">
+                                        <label for="keyName" class="col-sm-2 col-form-label">Name</label>
+                                        <div class="col-sm-10">
+                                          <input type="text"  class="form-control" id="keyName" placeholder="Ex: AdminKey">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="keyAlgorithm" class="col-sm-2 col-form-label">Algorithm</label>
+                                        <div class="col-sm-10">
+                                            <div class="dropdown open" id="keyAlgorithmDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="keyAlgorithm" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Algorithm
+                                                </button>
+                                                <div class="dropdown-menu" id="keyAlgorithmMenu">
+                                                    <a class="dropdown-item" href="#!">3-DES</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div style="float: right;">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="keyModalSubmitBtn" type="button" class="btn btn-primary" onclick="onCreateKeyBtnClick()">Submit</button>
+                                    </div>
+                                </form>
+                                </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Password and Key Column ends here -->
+
+            <!-- Accsess Control Column starts here -->
+            <div class="col-4">
+                <div style="width:100%; height: 200px;">
+                    <h2 style="text-align: center;">Access Control Rules</h2>
+                    <hr>
+                    <div class="d-flex flex-column" id="ACRList">
+                    </div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".ACRModal">Add New ACR</button>
+                    <div class="modal fade ACRModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Create New ACR</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <form id="ACRForm">
+                                    <div class="form-group row">
+                                        <label for="ACRName" class="col-sm-2 col-form-label">Name</label>
+                                        <div class="col-sm-10">
+                                          <input type="text"  class="form-control" id="ACRName" placeholder="Ex: CardHolderPassword">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="ACRCondition" class="col-sm-2 col-form-label">Condition</label>
+                                        <div class="col-sm-10" id="ACRCondition">
+                                            <div class="dropdown open" id="ACRConditionLeftDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="ACRConditionLeft" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu" id="ACRConditionLeftOptions">
+                                                    <h6 class="dropdown-header">Primitive</h6>
+                                                    <a class="dropdown-item" href="#!">Always</a>
+                                                    <a class="dropdown-item" href="#!">Never</a>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown open" id="ACROperatorDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="ACRConditionOperator" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#!">AND</a>
+                                                    <a class="dropdown-item" href="#!">OR</a>
+                                                    <a class="dropdown-item" href="#!">None</a>
+                                                </div>
+                                            </div>
+                                            <div class="dropdown open" id="ACRConditionRightDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="ACRConditionRight" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu" id="ACRConditionRightOptions">
+                                                    <h6 class="dropdown-header">Primitive</h6>
+                                                    <a class="dropdown-item" href="#!">Always</a>
+                                                    <a class="dropdown-item" href="#!">Never</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="float: right;">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="ACRModalSubmitBtn" type="button" class="btn btn-primary" onclick="onCreateACRBtnClick()">Submit</button>
+                                    </div>
+                                </form>
+                                </div>
+                        </div>
+                    </div>
+                    </div>
+                    <br><hr>
+                </div>
+            </div>
+            <!-- Accsess Control Column ends here -->
+                
+            <!-- Attributes Column starts here -->
+            <div class="col-4">
+                <div style="width:100%; height: 200px;">
+                    <h2 style="text-align: center;">Attributes</h2>
+                    <hr>
+                    <div class="d-flex flex-column" id="attributeList"></div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".attributeModal">Add Attribute</button>
+                    <div class="modal fade attributeModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Create New Attribute</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <form id="attributeForm">
+                                    <div class="form-group row">
+                                        <label for="attributeName" class="col-sm-2 col-form-label">Name</label>
+                                        <div class="col-sm-10">
+                                          <input type="text"  class="form-control" id="attributeName" placeholder="Ex: CardHolderName">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="inputEmail3" class="col-sm-2 col-form-label">Type</label>
+                                        <div class="col-sm-10">
+                                            <div class="dropdown open" id="attributeTypeDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="dropdownMenu3" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu" id="attributeDataTypeDropdownMenu">
+                                                    <a class="dropdown-item" href="#!">String</a>
+                                                    <a class="dropdown-item" href="#!">Integer</a>
+                                                    <a class="dropdown-item" href="#!">Float/Real</a>
+                                                    <a class="dropdown-item" href="#!">Image</a>
+                                                    <a class="dropdown-item" href="#!">Boolean</a>
+                                                    <a class="dropdown-item" href="#!">Enumerated</a>
+                                                    <a class="dropdown-item" href="#!">Date</a>
+                                                    <a class="dropdown-item" href="#!">Date-Time</a>
+                                                    <a class="dropdown-item" href="#!">Custom ASN1</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="optionalAttributesField">
+                                        <div class="form-group row">
+                                            <label for="attributeMaxLength" class="col-sm-2 col-form-label">Max Length</label>
+                                            <div class="col-sm-10">
+                                              <input type="number"  class="form-control" id="attributeMaxLength" placeholder="Ex: 30">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h5>Access Rules</h5>
+                                    <div class="form-group row">
+                                        <label for="inputEmail3" class="col-sm-2 col-form-label">Read</label>
+                                        <div class="col-sm-10">
+                                            <div class="dropdown open" id="readACRDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="dropdownMenu3" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu acr-read-write-update">
+                                                    <h6 class='dropdown-header'>Primitive</h6>
+                                                    <a class="dropdown-item" href="#!">Always</a>
+                                                    <a class="dropdown-item" href="#!">Never</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="inputEmail3" class="col-sm-2 col-form-label">Write</label>
+                                        <div class="col-sm-10">
+                                            <div class="dropdown open" id="writeACRDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="dropdownMenu3" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu acr-read-write-update">
+                                                    <h6 class='dropdown-header'>Primitive</h6>
+                                                    <a class="dropdown-item" href="#!">Always</a>
+                                                    <a class="dropdown-item" href="#!">Never</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="inputEmail3" class="col-sm-2 col-form-label">Update</label>
+                                        <div class="col-sm-10">
+                                            <div class="dropdown open" id="updateACRDropdown" style="display: inline;">
+                                                <button class="btn btn-secondary dropdown-toggle"
+                                                        type="button" id="dropdownMenu3" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    Dropdown
+                                                </button>
+                                                <div class="dropdown-menu acr-read-write-update">
+                                                    <h6 class='dropdown-header'>Primitive</h6>
+                                                    <a class="dropdown-item" href="#!">Always</a>
+                                                    <a class="dropdown-item" href="#!">Never</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="float: right;">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="attributeModalSubmitBtn" type="button" class="btn btn-primary" onclick="onCreateAttributeBtnClick()">Submit</button>
+                                    </div>
+                                </form>
+                                </div>
+                        </div>
+                    </div>
+                    </div>
+                    <br><hr><hr>
+                </div>
+            </div>
+            <!-- Attributes Column ends here -->
+        </div>
+    </div>
+
+    
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="main.js"></script>
+    <script src="sccm_js/helperFunctions.js"></script>
+    <script src="sccm_js/password.js"></script>
+    <script src="sccm_js/key.js"></script>
+    <script src="sccm_js/acr.js"></script>
+    <script src="sccm_js/attribute.js"></script>
+    <script src="sccm_js/allocateFiles.js"></script>
+    <script src="sccm_js/generateFCP.js"></script>
+    <script src="sccmFile.js"></script>
+  </body>
+</html>
